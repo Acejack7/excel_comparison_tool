@@ -120,7 +120,7 @@ def compare_contents(translated_content, reviewed_content):
         for review in reviewed_content:
             if translation['source'] == review['source']:
                 translation['review'] = review['target']
-    
+
     full_content = translated_content
     return(full_content)
 
@@ -134,7 +134,12 @@ def create_report_file(full_content, cur_dir, lang_code):
     ws['A1'] = 'Source'
     ws['B1'] = 'Translation'
     ws['C1'] = 'Review'
-    ws['D1'] = 'Changes?'
+    ws['D1'] = 'Changed?'
+
+    ws.column_dimensions['A'].width = 35
+    ws.column_dimensions['B'].width = 35
+    ws.column_dimensions['C'].width = 35
+    ws.column_dimensions['D'].width = 10
 
     counter = 2
     for content in full_content:
@@ -144,15 +149,20 @@ def create_report_file(full_content, cur_dir, lang_code):
         review = content['review']
 
         ws['A' + row] = source
+        ws['A' + row].alignment = Alignment(wrap_text=True)
         ws['B' + row] = target
+        ws['B' + row].alignment = Alignment(wrap_text=True)
         ws['C' + row] = review
+        ws['C' + row].alignment = Alignment(wrap_text=True)
 
         if target == review:
             ws['D' + row] = 'No'
         else:
             ws['D' + row] = 'Yes'
+            ws['D' + row].fill = PatternFill(fgColor='FF0000', fill_type='solid')
+            ws['C' + row].font = Font(color='FF0000')
 
         counter += 1
-    
+
     wb_report.save(os.path.join(cur_dir, lang_code + '_report.xlsx'))
     return('Report created succesfully.')
