@@ -7,6 +7,7 @@ from openpyxl.styles import Alignment, Font, PatternFill
 
 languages = {'de-de': ['german', 'deutsch'],
              'es-es': ['spanish', 'español'],
+             'fr-ca': ['french (canada), french, français'],
              'fr-fr': ['french', 'français'],
              'ja-jp': ['japanese', '日本人'],
              'it-it': ['italian', 'イタリアの'],
@@ -141,9 +142,12 @@ def compare_contents(translated_content, reviewed_content):
                 full_content.append({'source': source_seg, 'target': target_seg, 'review': review_seg})
 
     # remove duplicates
-    full_content = set(full_content)
+    full_content_cleaned = []
+    for i in range(len(full_content)):
+        if full_content[i] not in full_content[i + 1:]:
+            full_content_cleaned.append(full_content[i])
 
-    return(full_content)
+    return(full_content_cleaned)
 
 
 def create_report_file(full_content, cur_dir, lang_code):
