@@ -66,62 +66,83 @@ def get_target_lang(lang_code):
         return('')
 
 
+def verify_excel(files):
+    proper_excel_files = []
+
+    for file in files:
+        try:
+            wb = load_workbook(file)
+            wb.close()
+            proper_excel_files.append(file)
+        except Exception:
+            print('%s is not an excel file and got removed from the list.' % file)
+            continue
+
+    return(proper_excel_files)
+
+
 def get_excel_contents(files, target_lang):
 
     segments = []
 
     for file_elem in files:
-        if file_elem.endswith('.xlsx'):
-            wb = load_workbook(file_elem)
+        wb = load_workbook(file_elem)
 
-            ws = wb.worksheets
+        ws = wb.worksheets
 
-            for sheet in ws:
-                if sheet.sheet_state == 'visible':
+        for sheet in ws:
+            if sheet.sheet_state == 'visible':
 
-                    source_col = ''
-                    target_col = ''
+                source_col = ''
+                target_col = ''
 
-                    for row in sheet.rows:
-                        for cell in row:
-                            cell_value = str(cell.value).lower()
-                            if cell_value.startswith('english') or cell_value.startswith('source'):
-                                start_row = cell.row
-                                source_col = cell.column
-                                break
-                        if source_col != '':
+                for row in sheet.rows:
+                    for cell in row:
+                        cell_value = str(cell.value).lower()
+                        if cell_value.startswith('english') or cell_value.startswith('source'):
+                            start_row = cell.row
+                            source_col = cell.column
                             break
+                    if source_col != '':
+                        break
 
-                    for col in sheet.iter_cols(min_row=start_row, max_row=start_row):
-                        for cell in col:
-                            cell_value = str(cell.value).lower()
-                            if cell_value.startswith('translation') or cell_value.startswith('target'):
+                for col in sheet.iter_cols(min_row=start_row, max_row=start_row):
+                    for cell in col:
+                        cell_value = str(cell.value).lower()
+                        if cell_value.startswith('translation') or cell_value.startswith('target'):
+                            target_col = cell.column
+                            break
+                        elif target_lang != '':
+                            if cell_value in target_lang:
                                 target_col = cell.column
                                 break
-                            elif target_lang != '':
-                                if cell_value in target_lang:
-                                    target_col = cell.column
-                                    break
-                        if target_col != '':
-                            break
+                    if target_col != '':
+                        break
 
-                    if source_col != '' and target_col != '':
-                        for num in range(start_row+1, sheet.max_row):
-                            source_content = sheet[source_col + str(num)].value
-                            target_content = sheet[target_col + str(num)].value
-                            if source_content is not None and target_content is not None:
-                                segments.append({'source': source_content, 'target': target_content})
+                if source_col != '' and target_col != '':
+                    for num in range(start_row+1, sheet.max_row):
+                        source_content = sheet[source_col + str(num)].value
+                        target_content = sheet[target_col + str(num)].value
+                        if source_content is not None and target_content is not None:
+                            segments.append({'source': source_content, 'target': target_content})
 
     return(segments)
 
 
 def compare_contents(translated_content, reviewed_content):
+    full_content = []
+
     for translation in translated_content:
         for review in reviewed_content:
             if translation['source'] == review['source']:
-                translation['review'] = review['target']
+                source_seg = translation['source']
+                target_seg = translation['target']
+                review_seg = review['target']
+                full_content.append({'source': source_seg, 'target': target_seg, 'review': review_seg})
 
-    full_content = translated_content
+    # remove duplicates
+    full_content = set(full_content)
+
     return(full_content)
 
 
