@@ -24,9 +24,15 @@ if __name__ == '__main__':
     # check target language
     target_lang = excel_comparison.get_target_lang(lang_code)
 
+    # get translated and reviewed content: segments and file, sheet names and row
     translated_content = excel_comparison.get_excel_contents(verified_trans_files, target_lang)
     reviewed_content = excel_comparison.get_excel_contents(verified_review_files, target_lang)
 
+    # compare translated and reviewed contents and merge them together
     full_content = excel_comparison.compare_contents(translated_content, reviewed_content)
 
-    print(excel_comparison.create_report_file(full_content, cur_work_dir, lang_code))
+    # sort by changes
+    full_content_sorted = excel_comparison.sort_by_changes(full_content)
+
+    # create report excel file
+    print(excel_comparison.create_report_file(full_content_sorted, cur_work_dir, lang_code))

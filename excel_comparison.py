@@ -125,7 +125,8 @@ def get_excel_contents(files, target_lang):
                         source_content = sheet[source_col + str(num)].value
                         target_content = sheet[target_col + str(num)].value
                         if source_content is not None and target_content is not None:
-                            segments.append({'source': source_content, 'target': target_content})
+                            segments.append({'source': source_content, 'target': target_content,
+                                             'file': file_elem, 'sheet': sheet.title, 'row': str(num)})
 
     return(segments)
 
@@ -138,16 +139,33 @@ def compare_contents(translated_content, reviewed_content):
             if translation['source'] == review['source']:
                 source_seg = translation['source']
                 target_seg = translation['target']
-                review_seg = review['target']
-                full_content.append({'source': source_seg, 'target': target_seg, 'review': review_seg})
+                rev_seg = review['target']
 
-    # remove duplicates
-    full_content_cleaned = []
-    for i in range(len(full_content)):
-        if full_content[i] not in full_content[i + 1:]:
-            full_content_cleaned.append(full_content[i])
+                trans_file = translation['file']
+                trans_sheet = translation['sheet']
+                trans_row = translation['row']
 
-    return(full_content_cleaned)
+                rev_file = review['file']
+                rev_sheet = review['sheet']
+                rev_row = review['row']
+                full_content.append({'source': source_seg, 'target': target_seg, 'review': rev_seg,
+                                     'trans_file': trans_file, 'trans_sheet': trans_sheet, 'trans_row': trans_row,
+                                     'rev_file': rev_file, 'rev_sheet': rev_sheet, 'rev_row': rev_row})
+                reviewed_content.remove(review)
+
+    return(full_content)
+
+
+def sort_by_changes(full_content):
+    sorted_full_content = []
+
+    for elem in full_content:
+        if elem['target'] != elem['review']:
+            sorted_full_content.insert(0, elem)
+        else:
+            sorted_full_content.append(elem)
+
+    return(sorted_full_content)
 
 
 def create_report_file(full_content, cur_dir, lang_code):
@@ -160,11 +178,23 @@ def create_report_file(full_content, cur_dir, lang_code):
     ws['B1'] = 'Translation'
     ws['C1'] = 'Review'
     ws['D1'] = 'Changed?'
+    ws['E1'] = 'Trans File'
+    ws['F1'] = 'Trans Sheet'
+    ws['G1'] = 'Trans Row'
+    ws['H1'] = 'Review File'
+    ws['I1'] = 'Review Sheet'
+    ws['J1'] = 'Review Row'
 
     ws.column_dimensions['A'].width = 35
     ws.column_dimensions['B'].width = 35
     ws.column_dimensions['C'].width = 35
     ws.column_dimensions['D'].width = 10
+    ws.column_dimensions['E'].width = 50
+    ws.column_dimensions['F'].width = 20
+    ws.column_dimensions['G'].width = 15
+    ws.column_dimensions['H'].width = 50
+    ws.column_dimensions['I'].width = 20
+    ws.column_dimensions['J'].width = 15
 
     counter = 2
     for content in full_content:
@@ -172,6 +202,14 @@ def create_report_file(full_content, cur_dir, lang_code):
         source = content['source']
         target = content['target']
         review = content['review']
+
+        trans_file = content['trans_file']
+        trans_sheet = content['trans_sheet']
+        trans_row = content['trans_row']
+
+        review_file = content['rev_file']
+        review_sheet = content['rev_sheet']
+        review_row = content['rev_row']
 
         ws['A' + row] = source
         ws['A' + row].alignment = Alignment(wrap_text=True)
@@ -186,6 +224,14 @@ def create_report_file(full_content, cur_dir, lang_code):
             ws['D' + row] = 'Yes'
             ws['D' + row].fill = PatternFill(fgColor='FF0000', fill_type='solid')
             ws['C' + row].font = Font(color='FF0000')
+
+        ws['E' + row] = trans_file
+        ws['F' + row] = trans_sheet
+        ws['G' + row] = trans_row
+
+        ws['H' + row] = review_file
+        ws['I' + row] = review_sheet
+        ws['J' + row] = review_row
 
         counter += 1
 
