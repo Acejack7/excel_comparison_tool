@@ -141,11 +141,11 @@ def compare_contents(translated_content, reviewed_content):
                 target_seg = translation['target']
                 rev_seg = review['target']
 
-                trans_file = translation['file']
+                trans_file = os.path.split(translation['file'])[1]
                 trans_sheet = translation['sheet']
                 trans_row = translation['row']
 
-                rev_file = review['file']
+                rev_file = os.path.split(review['file'])[1]
                 rev_sheet = review['sheet']
                 rev_row = review['row']
                 full_content.append({'source': source_seg, 'target': target_seg, 'review': rev_seg,
