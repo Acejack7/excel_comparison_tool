@@ -162,10 +162,79 @@ def sort_by_changes(full_content):
     for elem in full_content:
         if elem['target'] != elem['review']:
             sorted_full_content.insert(0, elem)
+            elem['changed'] = True
         else:
             sorted_full_content.append(elem)
+            elem['changed'] = False
 
     return(sorted_full_content)
+
+
+def mark_changes_in_rev(full_content):
+    full_content_marked = []
+
+    for elem in full_content:
+        if elem['changed'] is True:
+            trans = elem['target']
+            rev = elem['review']
+
+            trans_split = trans.split(' ')
+            rev_split = rev.split(' ')
+
+            last = 'same'
+            counter = 0
+
+            review_text = []
+
+            for trans_elem in trans_split:
+                index = trans_split.index(trans_elem)
+
+                # catch exception where len(trans_split) > len(rev_split)
+                try:
+                    rev_elem = rev_split[index]
+                except IndexError:
+                    break
+
+                if trans_elem == rev_elem:
+                    if last != 'same':
+                        last = 'same'
+                        counter += 1
+                    if review_text == []:
+                        counter = 0
+
+                    try:
+                        review_text[counter] += rev_elem + ' '
+                    except IndexError:
+                        review_text.append(rev_elem + ' ')
+
+                else:
+                    if last != 'diff':
+                        last = 'diff'
+                        counter += 1
+                    if review_text == []:
+                        counter = 0
+
+                    try:
+                        review_text[counter] += rev_elem + ' '
+                    except IndexError:
+                        review_text.append(rev_elem + ' ')
+
+            # check if rev_split > trans_split to add the rest of the rev text to last element of review_text
+            if len(rev_split) > len(trans_split):
+                len_diff = len(rev_split) - len(trans_split)
+                missed_elems = rev_split[-len_diff:]
+                for elem in missed_elems:
+                    review_text[-1] += elem + ' '
+
+            # remove last redundant space
+            review_text = review_text[-1].rstrip(' ')
+
+            # assign the review_text list as review text
+            elem['review'] = review_text
+
+        full_content_marked.append(elem)
+
+    return(full_content_marked)
 
 
 def create_report_file(full_content, cur_dir, lang_code):
@@ -218,7 +287,7 @@ def create_report_file(full_content, cur_dir, lang_code):
         ws['C' + row] = review
         ws['C' + row].alignment = Alignment(wrap_text=True)
 
-        if target == review:
+        if content['changed'] is False:
             ws['D' + row] = 'No'
         else:
             ws['D' + row] = 'Yes'
