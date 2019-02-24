@@ -34,5 +34,12 @@ if __name__ == '__main__':
     # sort by changes
     full_content_sorted = excel_comparison.sort_by_changes(full_content)
 
-    # create report excel file
-    print(excel_comparison.create_report_file(full_content_sorted, cur_work_dir, lang_code))
+    # get changes in review and mark them
+    full_content_marked = excel_comparison.mark_changes_in_rev(full_content_sorted)
+
+    # create report file
+    report_file = excel_comparison.create_report_file(full_content_marked, cur_work_dir, lang_code)
+    print(report_file)
+
+    # add additional data to report file
+    # print(excel_comparison.add_data_to_report(full_content_marked, report_file))
