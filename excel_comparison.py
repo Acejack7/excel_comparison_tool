@@ -205,8 +205,12 @@ def mark_changes_in_rev(full_content):
                 if trans_elem == rev_elem:
                     rev_same += rev_elem + ' '
                 else:
-                    for dif_txt in rev_split[index:]:
-                        rev_diff += dif_txt + ' '
+                    if len(rev_split) > len(trans_split):
+                        for dif_txt in rev_split[index:len(trans_split)]:
+                            rev_diff += dif_txt + ' '
+                    else:
+                        for dif_txt in rev_split[index:]:
+                            rev_diff += dif_txt + ' '
                     break
 
             review_text.append(rev_same)
@@ -217,7 +221,7 @@ def mark_changes_in_rev(full_content):
                 len_diff = len(rev_split) - len(trans_split)
                 missed_words = rev_split[-len_diff:]
                 for word in missed_words:
-                    rev_diff += word
+                    rev_diff += word + ' '
                 review_text[1] = rev_diff
 
             # remove last redundant space
