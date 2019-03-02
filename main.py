@@ -5,7 +5,9 @@ import excel_comparison
 if __name__ == '__main__':
     print('Welcome in Excel Comparison Tool.')
     translation_files = input('Please provide file path to translated file(s): ')
-    review_files = input('Please probide file path to reviewed file(s): ')
+    review_files = input('Please provide file path to reviewed file(s): ')
+    user_src_col = input('Please provide source column or leave empty to let computer search: ')
+    user_trg_col = input('Please provide translation column or leave empty to let computer search: ')
 
     # get information about provided paths, files
     translated_files_info = excel_comparison.get_files(translation_files)
@@ -25,8 +27,8 @@ if __name__ == '__main__':
     target_lang = excel_comparison.get_target_lang(lang_code)
 
     # get translated and reviewed content: segments and file, sheet names and row
-    translated_content = excel_comparison.get_excel_contents(verified_trans_files, target_lang)
-    reviewed_content = excel_comparison.get_excel_contents(verified_review_files, target_lang)
+    translated_content = excel_comparison.get_excel_contents(verified_trans_files, target_lang, user_src_col, user_trg_col)
+    reviewed_content = excel_comparison.get_excel_contents(verified_review_files, target_lang, user_src_col, user_trg_col)
 
     # compare translated and reviewed contents and merge them together
     full_content = excel_comparison.compare_contents(translated_content, reviewed_content)

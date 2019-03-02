@@ -89,7 +89,7 @@ def verify_excel(files):
 
 
 # get excel contents: source, target, file, sheet and row of source/target
-def get_excel_contents(files, target_lang):
+def get_excel_contents(files, target_lang, source_col='', target_col=''):
 
     segments = []
 
@@ -101,31 +101,30 @@ def get_excel_contents(files, target_lang):
         for sheet in ws:
             if sheet.sheet_state == 'visible':
 
-                source_col = ''
-                target_col = ''
-
-                for row in sheet.rows:
-                    for cell in row:
-                        cell_value = str(cell.value).lower()
-                        if cell_value.startswith('english') or cell_value.startswith('source'):
-                            start_row = cell.row
-                            source_col = cell.column
+                if source_col == '':
+                    for row in sheet.rows:
+                        for cell in row:
+                            cell_value = str(cell.value).lower()
+                            if cell_value.startswith('english') or cell_value.startswith('source'):
+                                start_row = cell.row
+                                source_col = cell.column
+                                break
+                        if source_col != '':
                             break
-                    if source_col != '':
-                        break
 
-                for col in sheet.iter_cols(min_row=start_row, max_row=start_row):
-                    for cell in col:
-                        cell_value = str(cell.value).lower()
-                        if cell_value.startswith('translation') or cell_value.startswith('target'):
-                            target_col = cell.column
-                            break
-                        elif target_lang != '':
-                            if cell_value in target_lang:
+                if target_col == '':
+                    for col in sheet.iter_cols(min_row=start_row, max_row=start_row):
+                        for cell in col:
+                            cell_value = str(cell.value).lower()
+                            if cell_value.startswith('translation') or cell_value.startswith('target'):
                                 target_col = cell.column
                                 break
-                    if target_col != '':
-                        break
+                            elif target_lang != '':
+                                if cell_value in target_lang:
+                                    target_col = cell.column
+                                    break
+                        if target_col != '':
+                            break
 
                 if source_col != '' and target_col != '':
                     for num in range(start_row+1, sheet.max_row):
