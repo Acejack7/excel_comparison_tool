@@ -100,6 +100,7 @@ def get_excel_contents(files, target_lang, source_col='', target_col=''):
 
         for sheet in ws:
             if sheet.sheet_state == 'visible':
+                start_row = 0
 
                 if source_col == '':
                     for row in sheet.rows:
