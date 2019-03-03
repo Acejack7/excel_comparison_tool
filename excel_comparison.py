@@ -2,6 +2,7 @@
 
 import os
 import xlsxwriter
+import re
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, PatternFill
 
@@ -16,6 +17,20 @@ languages = {'de-de': ['german', 'deutsch'],
              'pl-pl': ['polish', 'polski'],
              'sv-se': ['swedish', 'svenska'],
              }
+
+
+# verify if valid column letter
+def verify_column(col):
+    if (len(col)) != 1:
+        return(False)
+
+    else:
+        col_pattern = re.compile('[a-zA-Z]')
+        col_check = re.findall(col_pattern, col)
+        if len(col_check) == 1:
+            return(True)
+        else:
+            return(False)
 
 
 # check if input path is a file or dir; return the file list, dir of files and lang code

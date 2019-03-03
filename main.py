@@ -6,8 +6,21 @@ if __name__ == '__main__':
     print('Welcome in Excel Comparison Tool.')
     translation_files = input('Please provide file path to translated file(s): ')
     review_files = input('Please provide file path to reviewed file(s): ')
-    user_src_col = input('Please provide source column or leave empty to let computer search: ')
-    user_trg_col = input('Please provide translation column or leave empty to let computer search: ')
+    user_src_col = input('Please provide source column or leave empty to let computer recognize: ')
+    user_trg_col = input('Please provide translation column or leave empty to let computer recognize: ')
+
+    # verify columns provided by user
+    while excel_comparison.verify_column(user_src_col) is False:
+        print('Please provide proper column letter.')
+        user_src_col = input('Please provide source column or leave empty to let computer recognize: ')
+        if user_src_col == '':
+            break
+
+    while excel_comparison.verify_column(user_trg_col) is False:
+        print('Please provide proper column letter.')
+        user_trg_col = input('Please provide translation column or leave empty to let computer recognize: ')
+        if user_trg_col == '':
+            break
 
     # get information about provided paths, files
     translated_files_info = excel_comparison.get_files(translation_files)
