@@ -7,18 +7,18 @@ if __name__ == '__main__':
     translation_files = input('Please provide file path to translated file(s): ')
     review_files = input('Please provide file path to reviewed file(s): ')
     user_src_col = input('Please provide source column or leave empty to let computer recognize: ')
-    user_trg_col = input('Please provide translation column or leave empty to let computer recognize: ')
+    user_trg_col = input('Please provide translation/review column or leave empty to let computer recognize: ')
 
     # verify columns provided by user
     while excel_comparison.verify_column(user_src_col) is False:
-        print('Please provide proper column letter.')
+        print('Please provide proper column letter for source content.')
         user_src_col = input('Please provide source column or leave empty to let computer recognize: ')
         if user_src_col == '':
             break
 
     while excel_comparison.verify_column(user_trg_col) is False:
-        print('Please provide proper column letter.')
-        user_trg_col = input('Please provide translation column or leave empty to let computer recognize: ')
+        print('Please provide proper column letter for translated/reviewed content.')
+        user_trg_col = input('Please provide translation/review column or leave empty to let computer recognize: ')
         if user_trg_col == '':
             break
 
