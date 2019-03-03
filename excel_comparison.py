@@ -89,7 +89,7 @@ def verify_excel(files):
 
 
 # get excel contents: source, target, file, sheet and row of source/target
-def get_excel_contents(files, target_lang, source_col='', target_col=''):
+def get_excel_contents(files, target_lang, user_src_col='', user_trg_col=''):
 
     segments = []
 
@@ -99,6 +99,9 @@ def get_excel_contents(files, target_lang, source_col='', target_col=''):
         ws = wb.worksheets
 
         for sheet in ws:
+            source_col = user_src_col
+            target_col = user_trg_col
+
             if sheet.sheet_state == 'visible':
                 start_row = 0
 
