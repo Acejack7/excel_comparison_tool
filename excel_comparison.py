@@ -210,8 +210,8 @@ def mark_changes_in_rev(full_content):
             rev_split = rev.split(' ')
 
             review_text = []
-            rev_same = ''
-            rev_diff = ''
+            rev_same = ""
+            rev_diff = ""
 
             for index, trans_elem in enumerate(trans_split):
                 # catch exception where len(trans_split) > len(rev_split)
@@ -314,7 +314,10 @@ def create_report_file(full_content_marked, cur_dir, lang_code):
         ws.write('B' + cur_row, target, text_wrap)
         if type(rev) is str:
             ws.write('C' + cur_row, rev, text_wrap)
+        elif type(rev) is float:
+            ws.write('C' + cur_row, str(rev), text_wrap)
         else:
+            print(rev)
             if rev[0] == '' or rev[1] == '':
                 ws.write('C' + cur_row, rev[0] + rev[1], red_color_wrap)
             else:
