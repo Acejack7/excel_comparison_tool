@@ -317,7 +317,6 @@ def create_report_file(full_content_marked, cur_dir, lang_code):
         elif type(rev) is float:
             ws.write('C' + cur_row, str(rev), text_wrap)
         else:
-            print(rev)
             if rev[0] == '' or rev[1] == '':
                 ws.write('C' + cur_row, rev[0] + rev[1], red_color_wrap)
             else:

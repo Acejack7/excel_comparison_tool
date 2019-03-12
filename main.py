@@ -7,7 +7,8 @@ if __name__ == '__main__':
     translation_files = input('Please provide file path to translated file(s): ')
     review_files = input('Please provide file path to reviewed file(s): ')
     user_src_col = input('Please provide source column or leave empty to let computer recognize: ')
-    user_trg_col = input('Please provide translation/review column or leave empty to let computer recognize: ')
+    user_trg_col = input('Please provide translation column or leave empty to let computer recognize: ')
+    user_rev_col = input('Please provide review column or leave empty to let computer recognize: ')
 
     # verify columns provided by user
     while excel_comparison.verify_column(user_src_col) is False:
@@ -17,8 +18,14 @@ if __name__ == '__main__':
             break
 
     while excel_comparison.verify_column(user_trg_col) is False:
-        print('Please provide proper column letter for translated/reviewed content.')
-        user_trg_col = input('Please provide translation/review column or leave empty to let computer recognize: ')
+        print('Please provide proper column letter for translated content.')
+        user_trg_col = input('Please provide translation column or leave empty to let computer recognize: ')
+        if user_trg_col == '':
+            break
+
+    while excel_comparison.verify_column(user_rev_col) is False:
+        print('Please provide proper column letter for reviewed content.')
+        user_rev_col = input('Please provide review column or leave empty to let computer recognize: ')
         if user_trg_col == '':
             break
 
@@ -41,7 +48,7 @@ if __name__ == '__main__':
 
     # get translated and reviewed content: segments and file, sheet names and row
     translated_content = excel_comparison.get_excel_contents(verified_trans_files, target_lang, user_src_col, user_trg_col)
-    reviewed_content = excel_comparison.get_excel_contents(verified_review_files, target_lang, user_src_col, user_trg_col)
+    reviewed_content = excel_comparison.get_excel_contents(verified_review_files, target_lang, user_src_col, user_rev_col)
 
     # compare translated and reviewed contents and merge them together
     full_content = excel_comparison.compare_contents(translated_content, reviewed_content)
